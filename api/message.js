@@ -22,8 +22,8 @@ export default async function handler(req, res) {
     });
     const data = await response.json();
     // Sem texto: devolve o motivo que a Anthropic informou (tipo e mensagem), para o erro nao ficar escondido.
-    const text = data.content?.[0]?.text || '';
-    if (!text) return res.status(200).json({ text: '', erro: data.error?.type || 'sem_texto', detalhe: data.error?.message || '', status: response.status });
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('') || '';
+    if (!text) return res.status(200).json({ text: '', erro: data.error?.type || 'sem_texto', detalhe: data.error?.message || '', status: response.status, parada: data.stop_reason || '', tipos: (data.content || []).map(b => b.type) });
     res.status(200).json({ text, uso: data.usage || null });
   } catch(e) {
     res.status(500).json({ error: e.message });
