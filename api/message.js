@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     // Sem texto: devolve o motivo que a Anthropic informou (tipo e mensagem), para o erro nao ficar escondido.
     const text = data.content?.[0]?.text || '';
     if (!text) return res.status(200).json({ text: '', erro: data.error?.type || 'sem_texto', detalhe: data.error?.message || '', status: response.status });
-    res.status(200).json({ text });
+    res.status(200).json({ text, uso: data.usage || null });
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
